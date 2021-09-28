@@ -63,3 +63,59 @@ const galleryItems = [
     description: 'Lighthouse Coast Sea',
   },
 ];
+
+const galleryRef = document.querySelector('.js-gallery');
+const lightboxRef = document.querySelector('.js-lightbox');
+const overlayRef = document.querySelector('.lightbox__overlay');
+const lightboxImgRef = document.querySelector('.lightbox__image');
+const closeLightboxBtnRef = document.querySelector(
+  'button[data-action="close-lightbox"]',
+);
+
+const createGallery = function (item) {
+  return `<li class="gallery__item">
+  <a class="gallery__link" href=${item.original}>
+    <img class="gallery__image"
+      src=${item.preview}
+      data-source=${item.original}
+      alt=${item.description}
+    />
+  </a>
+</li>`;
+};
+
+const markupGallery = galleryItems.map(item => createGallery(item)).join('');
+galleryRef.innerHTML = markupGallery;
+
+const modalOpen = evt => {
+  if (evt.target === evt.currentTarget) return;
+  evt.preventDefault();
+  lightboxRef.classList.add('is-open');
+  lightboxImgRef.src = evt.target.getAttribute('data-source');
+  lightboxImgRef.alt = evt.alt;
+  // console.log(evt.target);
+  // console.log(evt.currentTarget);
+  document.body.addEventListener('keydown', onEsc);
+};
+
+const modalClose = () => {
+  lightboxRef.classList.remove('is-open');
+  lightboxImgRef.src = '';
+  lightboxImgRef.alt = '';
+  document.body.removeEventListener('keydown', onEsc);
+};
+
+const onEsc = evt => {
+  if (evt.code === 'Escape') {
+    modalClose();
+  }
+  // console.log(evt.code);
+};
+
+galleryRef.addEventListener('click', modalOpen);
+closeLightboxBtnRef.addEventListener('click', modalClose);
+overlayRef.addEventListener('click', evt => {
+  if (evt.target === evt.currentTarget) {
+    modalClose();
+  }
+});
